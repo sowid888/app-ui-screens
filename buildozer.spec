@@ -21,8 +21,8 @@ source.exclude_dirs = tests, bin, .venv, .git, .github
 # (str) Application versioning
 version = 1.0.0
 
-# (list) Application requirements
-requirements = python3,kivy,kivymd,requests,urllib3,certifi,chardet,idna
+# (list) Application requirements (تم تحديد إصدارات مستقرة لتفادي خطأ cython/cgl)
+requirements = python3,kivy==2.2.1,kivymd==1.1.1,requests,urllib3,certifi,chardet,idna
 
 # (str) Supported orientation
 orientation = portrait
@@ -51,7 +51,7 @@ android.accept_sdk_license = True
 # (bool) Enable AndroidX support
 android.enable_androidx = True
 
-# (str) The Android architectures to build for (تم التعديل لتجنب تعارض المكتبات)
+# (str) The Android architectures to build for
 android.archs = arm64-v8a
 
 # (bool) Allow backup of application data

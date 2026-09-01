@@ -51,8 +51,8 @@ android.accept_sdk_license = True
 # (bool) Enable AndroidX support
 android.enable_androidx = True
 
-# (str) The Android architectures to build for
-android.archs = arm64-v8a, armeabi-v7a
+# (str) The Android architectures to build for (تم التعديل لتجنب تعارض المكتبات)
+android.archs = arm64-v8a
 
 # (bool) Allow backup of application data
 android.allow_backup = True

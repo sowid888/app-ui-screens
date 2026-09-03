@@ -15,14 +15,17 @@ source.dir = .
 # (list) Source files to include
 source.include_exts = py,png,jpg,kv,atlas,json,yml,yaml,txt,db,mp3,wav
 
+# (list) Source files to exclude
+source.exclude_exts = spec
+
 # (list) List of directory to exclude
 source.exclude_dirs = tests, bin, .venv, .git, .github
 
 # (str) Application versioning
 version = 1.0.0
 
-# (list) Application requirements (تم تحديد إصدارات مستقرة لتفادي خطأ cython/cgl)
-requirements = python3,kivy==2.2.1,kivymd==1.1.1,requests,urllib3,certifi,chardet,idna
+# (list) Application requirements (تم تنظيف وتحديد المتطلبات المتوافقة)
+requirements = python3,kivy,kivymd,requests,urllib3,certifi,chardet,idna
 
 # (str) Supported orientation
 orientation = portrait
@@ -56,7 +59,6 @@ android.archs = arm64-v8a
 
 # (bool) Allow backup of application data
 android.allow_backup = True
-
 
 [buildozer]
 

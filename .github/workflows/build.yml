@@ -37,7 +37,7 @@ jobs:
     - name: Install Buildozer and Compatible Cython
       run: |
         python3 -m pip install --upgrade pip setuptools
-        pip install "cython==0.29.33"
+        pip install "cython<3.0.0"
         pip install buildozer
 
     - name: Clean Old Build Cache and Build APK

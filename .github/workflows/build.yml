@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
     - name: Checkout repository
@@ -30,21 +30,20 @@ jobs:
         sudo apt-get install -y \
           build-essential git ffmpeg libffi-dev libssl-dev ccache zip unzip \
           openjdk-17-jdk python3-pip python3-setuptools autoconf libtool \
-          pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo6 \
+          pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 \
           cmake libgdbm-dev libnss3-dev libsqlite3-dev libreadline-dev curl \
           libbz2-dev gettext m4 autopoint libltdl-dev
 
-    - name: Install Buildozer and Compatible Cython
+    - name: Force Cython 0.29.33 and Buildozer
       run: |
-        python3 -m pip install --upgrade pip setuptools
-        pip install "cython==0.29.33"
-        pip install buildozer
+        python3 -m pip install --upgrade pip setuptools wheel
+        pip uninstall -y cython
+        pip install "cython==0.29.33" --force-reinstall
+        pip install "buildozer==1.5.0"
 
-    - name: Build APK
-      env:
-        CYTHON_WITHOUT_ASSERTIONS: 1
+    - name: Build APK with Buildozer
       run: |
-        yes | buildozer -v android debug
+        buildozer -v android debug
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4

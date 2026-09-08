@@ -24,7 +24,7 @@ source.exclude_dirs = tests, bin, .venv, .git, .github
 # (str) Application versioning
 version = 1.0.0
 
-# (list) Application requirements (تم تحديد الإصدارات المتوافقة لمنع التعارض)
+# (list) Application requirements
 requirements = python3,kivy==2.3.0,kivymd==1.2.0,requests,urllib3,certifi,chardet,idna
 
 # (str) Supported orientation
@@ -45,8 +45,8 @@ android.api = 33
 # (int) Minimum API required
 android.minapi = 21
 
-# (str) Android NDK version to use
-android.ndk = 25b
+# تم تعطيل NDK المباشر لتدع Buildozer تختار النسخة المتوافقة تلقائياً
+# android.ndk = 25b
 
 # (bool) If True, then accept all SDK licenses automatically
 android.accept_sdk_license = True
@@ -54,8 +54,8 @@ android.accept_sdk_license = True
 # (bool) Enable AndroidX support
 android.enable_androidx = True
 
-# (str) The Android architectures to build for
-android.archs = arm64-v8a
+# (str) The Android architectures to build for (إضافة armeabi-v7a يضمن نجاح التجميع)
+android.archs = arm64-v8a, armeabi-v7a
 
 # (bool) Allow backup of application data
 android.allow_backup = True
@@ -67,8 +67,8 @@ android.debug_artifact = apk
 
 [buildozer]
 
-# (int) Log level (تم التعديل إلى 1 لمنع اقتطاع السجلات في GitHub)
+# (int) Log level
 log_level = 1
 
-# (int) Display warning if buildozer is run as root (تم التعطيل لتفادي التوقف)
+# (int) Display warning if buildozer is run as root
 warn_on_root = 0

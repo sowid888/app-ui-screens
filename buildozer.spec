@@ -45,8 +45,8 @@ android.api = 33
 # (int) Minimum API required
 android.minapi = 21
 
-# تم تعطيل NDK المباشر لتدع Buildozer تختار النسخة المتوافقة تلقائياً
-# android.ndk = 25b
+# تثبيت إصدار NDK على 25b لمنع Buildozer من تنزيل r28c المتعارض
+android.ndk = 25b
 
 # (bool) If True, then accept all SDK licenses automatically
 android.accept_sdk_license = True
@@ -54,8 +54,8 @@ android.accept_sdk_license = True
 # (bool) Enable AndroidX support
 android.enable_androidx = True
 
-# (str) The Android architectures to build for (إضافة armeabi-v7a يضمن نجاح التجميع)
-android.archs = arm64-v8a, armeabi-v7a
+# (str) The Android architectures to build for
+android.archs = arm64-v8a
 
 # (bool) Allow backup of application data
 android.allow_backup = True
@@ -67,8 +67,8 @@ android.debug_artifact = apk
 
 [buildozer]
 
-# (int) Log level
-log_level = 1
+# رفع مستوى السجل لتفكيك الأخطاء بدقة عند الحاجة
+log_level = 2
 
 # (int) Display warning if buildozer is run as root
 warn_on_root = 0

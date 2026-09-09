@@ -24,8 +24,8 @@ source.exclude_dirs = tests, bin, .venv, .git, .github
 # (str) Application versioning
 version = 1.0.0
 
-# (list) Application requirements
-requirements = python3,kivy==2.3.0,kivymd==1.2.0,requests,urllib3,certifi,chardet,idna
+# (list) Application requirements (تم إضافة cython==0.29.33 لمنع ترقيته تلقائياً لـ Cython 3)
+requirements = python3,kivy==2.3.0,kivymd==1.2.0,requests,urllib3,certifi,chardet,idna,cython==0.29.33
 
 # (str) Supported orientation
 orientation = portrait
@@ -45,7 +45,7 @@ android.api = 33
 # (int) Minimum API required
 android.minapi = 21
 
-# تثبيت إصدار NDK على 25b لمنع Buildozer من تنزيل r28c المتعارض
+# تثبيت إصدار NDK على 25b لمنع تنزيل r28c المتعارض
 android.ndk = 25b
 
 # (bool) If True, then accept all SDK licenses automatically
@@ -67,7 +67,7 @@ android.debug_artifact = apk
 
 [buildozer]
 
-# رفع مستوى السجل لتفكيك الأخطاء بدقة عند الحاجة
+# رفع مستوى السجل لتفكيك الأخطاء بدقة
 log_level = 2
 
 # (int) Display warning if buildozer is run as root

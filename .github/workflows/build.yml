@@ -34,11 +34,12 @@ jobs:
           cmake libgdbm-dev libnss3-dev libsqlite3-dev libreadline-dev curl \
           libbz2-dev gettext m4 autopoint libltdl-dev
 
-    - name: Install Compatible Cython and Buildozer
+    - name: Force Cython 0.29.33 and Buildozer
       run: |
         python3 -m pip install --upgrade pip setuptools wheel
+        pip uninstall -y cython
         pip install "cython==0.29.33"
-        pip install "buildozer==1.5.0"
+        pip install buildozer
 
     - name: Build APK
       env:

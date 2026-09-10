@@ -26,17 +26,18 @@ jobs:
 
     - name: Install System Dependencies
       run: |
-        sudo apt-get update
-        sudo apt-get install -y \
+        sudo apt-get update -y || sudo apt-get update -y --fix-missing
+        sudo apt-get install -y --fix-missing \
           build-essential git ffmpeg libffi-dev libssl-dev ccache zip unzip \
           openjdk-17-jdk python3-pip python3-setuptools autoconf libtool \
           pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 \
           cmake libgdbm-dev libnss3-dev libsqlite3-dev libreadline-dev curl \
           libbz2-dev gettext m4 autopoint libltdl-dev
 
-    - name: Force Cython 0.29.33 and Buildozer
+    - name: Prepare Compatible Python Build Environment
       run: |
-        python3 -m pip install --upgrade pip setuptools wheel
+        python3 -m pip install --upgrade pip
+        pip install "setuptools<60.0.0" "wheel<0.38.0"
         pip uninstall -y cython
         pip install "cython==0.29.33"
         pip install buildozer

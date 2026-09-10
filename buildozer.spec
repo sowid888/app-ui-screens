@@ -24,8 +24,8 @@ source.exclude_dirs = tests, bin, .venv, .git, .github
 # (str) Application versioning
 version = 1.0.0
 
-# (list) Application requirements
-requirements = python3,kivy==2.3.0,kivymd==1.2.0,requests,urllib3,certifi,chardet,idna
+# (list) Application requirements (تم تحديد إصدار python3 صراحة لمنع استدعاء Python 3.14)
+requirements = python3==3.10.12,kivy==2.3.0,kivymd==1.2.0,requests,urllib3,certifi,chardet,idna
 
 # (str) Supported orientation
 orientation = portrait

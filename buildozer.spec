@@ -64,6 +64,9 @@ android.allow_backup = True
 android.release_artifact = apk
 android.debug_artifact = apk
 
+# [تثبيت الفرع المستقر لمنع تنزيل Python 3.14]
+p4a.branch = v2024.01.21
+
 
 [buildozer]
 

@@ -1,28 +1,25 @@
 [app]
 
 # (str) Title of your application
-title = Fleet Management System 2600
+title = منظومة 2600
 
 # (str) Package name
-package.name = fleetapp2600
+package.name = truckapp2600
 
-# (str) Package domain (needed for android packaging)
-package.domain = org.jamal.fleet
+# (str) Package domain
+package.domain = org.test
 
 # (str) Source code where the main.py live
 source.dir = .
 
-# (list) Source files to include (all relevant app code and assets)
-source.include_exts = py,png,jpg,kv,atlas,json,yml,yaml,txt,db,mp3,wav
-
-# (list) List of directory to exclude
-source.exclude_dirs = tests, bin, .venv, .git, .github
+# (list) Source files to include
+source.include_exts = py,png,jpg,ttf
 
 # (str) Application versioning
 version = 1.0.0
 
 # (list) Application requirements
-requirements = python3,kivy,kivymd,requests,urllib3,certifi,chardet,idna
+requirements = python3,kivy==2.3.0,arabic_reshaper,python-bidi,requests
 
 # (str) Supported orientation
 orientation = portrait
@@ -30,38 +27,31 @@ orientation = portrait
 # (bool) Indicate if the application should be fullscreen or not
 fullscreen = 0
 
-# (string) Presplash background color
-android.presplash_color = #1A0000
-
-# (list) Permissions needed for Odometer camera, Audio reporting, and Network
-android.permissions = INTERNET,RECORD_AUDIO,CAMERA,READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE,ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION
-
 # (int) Target Android API
 android.api = 33
 
 # (int) Minimum API required
 android.minapi = 21
 
-# (int) Android NDK version to use
+# (str) Android NDK version
 android.ndk = 25b
 
-# (bool) Accept all SDK licenses automatically
+# (bool) Accept SDK licenses
 android.accept_sdk_license = True
 
 # (bool) Enable AndroidX support
 android.enable_androidx = True
 
 # (str) The Android architectures to build for
-android.archs = arm64-v8a, armeabi-v7a
+android.archs = arm64-v8a
 
-# (bool) Allow backup of application data
-android.allow_backup = True
-
+# [تثبيت الفرع المستقر لمنع مشاكل Python 3.14]
+p4a.branch = v2024.01.21
 
 [buildozer]
 
-# (int) Log level (0 = error only, 1 = info, 2 = debug)
+# رفع مستوى السجل لتفكيك الأخطاء بدقة
 log_level = 2
 
 # (int) Display warning if buildozer is run as root
-warn_on_root = 1
+warn_on_root = 0

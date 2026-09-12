@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-منظومة فاخر 2600 - وحدة الإدخال اليدوي والتحقق الذكي من العداد
+منظومة فاخر 2600 - واجهة التقاط صورة العداد والفواتير (Kivy UI)
 تاريخ التحديث: أغسطس 2026
 """
 
 import os
+import sys
 import datetime
+
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
@@ -14,7 +16,9 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.popup import Popup
 from kivy.core.text import LabelBase
 
-# إعداد الخط العربي
+# -------------------------------------------------------------
+# 1. إعداد الخط العربي ومعالجة المسارات تلقائياً
+# -------------------------------------------------------------
 local_font = os.path.join(os.path.dirname(__file__), "arial.ttf")
 win_system_font = r"C:\Windows\Fonts\arial.ttf"
 
@@ -28,25 +32,30 @@ else:
     DEFAULT_FONT = "Roboto"
 
 def ar(text):
+    """ دالة معالجة النصوص العربية """
     try:
         import arabic_reshaper
         from bidi.algorithm import get_display
-        return get_display(arabic_reshaper.reshape(str(text)))
+        reshaped = arabic_reshaper.reshape(str(text))
+        return get_display(reshaped)
     except Exception:
         return str(text)
 
-class SmartOdometerUI(BoxLayout):
-    def __init__(self, truck_id="2600-001", last_recorded_km=125000, **kwargs):
+# -------------------------------------------------------------
+# 2. الواجهة الرسومية لالتقاط العداد والفواتير
+# -------------------------------------------------------------
+class CameraOdometerUI(BoxLayout):
+    def __init__(self, truck_id="2600-001", chassis_number="JAAKP34H2D7P06865", **kwargs):
         super().__init__(orientation='vertical', spacing=12, padding=15, **kwargs)
         
         self.truck_id = truck_id
-        # حفظ آخر قراءة معتمدة للمركبة
-        self.last_recorded_km = last_recorded_km
-        self.captured_photo_path = None
+        self.chassis_number = chassis_number
+        self.captured_odometer_photo = None
+        self.captured_receipt_photo = None
 
-        # العنوان
+        # العنوان الرئيسي
         header = Label(
-            text=ar(f"تسجيل العداد | الشاحنة {self.truck_id}"),
+            text=ar(f"تأكيد إجراء - الشاحنة {self.truck_id}"),
             font_name=DEFAULT_FONT,
             font_size='18sp',
             size_hint_y=0.1,
@@ -54,49 +63,49 @@ class SmartOdometerUI(BoxLayout):
         )
         self.add_widget(header)
 
-        # عرض آخر قراءة مسجلة
-        lbl_last = Label(
-            text=ar(f"آخر قراءة مسجلة بالمسار: {self.last_recorded_km:,} كم"),
-            font_name=DEFAULT_FONT,
-            font_size='14sp',
-            color=(0.9, 0.9, 0.2, 1),
-            size_hint_y=0.08
-        )
-        self.add_widget(lbl_last)
-
-        # حقل الإدخال اليدوي
+        # حقل إدخال رقم العداد
         input_box = BoxLayout(orientation='horizontal', spacing=10, size_hint_y=0.12)
-        lbl_input = Label(
-            text=ar("القراءة الحالية:"),
+        lbl_odometer = Label(
+            text=ar("قراءة العداد الحالية:"),
             font_name=DEFAULT_FONT,
             font_size='14sp',
-            size_hint_x=0.35
+            size_hint_x=0.4
         )
         self.odometer_input = TextInput(
-            hint_text=ar("أدخل الرقم الفعلي"),
+            hint_text=ar("أدخل الرقم هنا"),
             font_name=DEFAULT_FONT,
             multiline=False,
             input_filter='int',
-            size_hint_x=0.65
+            size_hint_x=0.6
         )
-        input_box.add_widget(lbl_input)
+        input_box.add_widget(lbl_odometer)
         input_box.add_widget(self.odometer_input)
         self.add_widget(input_box)
 
-        # زر التقاط الصورة كتوثيق فقط
-        self.btn_photo = Button(
-            text=ar("📷 التقاط صورة العداد (للتوثيق الإداري)"),
+        # أزرار التقاط الصور
+        self.btn_odometer = Button(
+            text=ar("1. اضغط هنا لالتقاط صورة العداد"),
             font_name=DEFAULT_FONT,
-            font_size='14sp',
+            font_size='15sp',
             background_color=(0.2, 0.5, 0.7, 1),
             size_hint_y=0.18
         )
-        self.btn_photo.bind(on_press=self.take_photo_attachment)
-        self.add_widget(self.btn_photo)
+        self.btn_odometer.bind(on_press=self.capture_odometer)
+        self.add_widget(self.btn_odometer)
 
-        # زر التأكيد والحفظ
+        self.btn_receipt = Button(
+            text=ar("2. اضغط هنا لالتقاط صورة الفاتورة (اختياري)"),
+            font_name=DEFAULT_FONT,
+            font_size='15sp',
+            background_color=(0.3, 0.6, 0.5, 1),
+            size_hint_y=0.18
+        )
+        self.btn_receipt.bind(on_press=self.capture_receipt)
+        self.add_widget(self.btn_receipt)
+
+        # زر التأكيد والإرسال
         btn_submit = Button(
-            text=ar("✅ تأكيد واعتماد القراءة"),
+            text=ar("3. إرسال وتأكيد الإجراء"),
             font_name=DEFAULT_FONT,
             font_size='16sp',
             background_color=(0.1, 0.7, 0.3, 1),
@@ -105,63 +114,52 @@ class SmartOdometerUI(BoxLayout):
         btn_submit.bind(on_press=self.validate_and_submit)
         self.add_widget(btn_submit)
 
-    def take_photo_attachment(self, instance):
-        """ إرفاق صورة توثيقية """
-        self.captured_photo_path = f"odometer_{self.truck_id}.jpg"
-        self.btn_photo.text = ar("✓ تم إرفاق صورة العداد")
-        self.btn_photo.background_color = (0.1, 0.8, 0.3, 1)
+    def capture_odometer(self, instance):
+        """ محاكاة التقاط صورة العداد """
+        self.captured_odometer_photo = "odometer_photo_mock.jpg"
+        self.btn_odometer.text = ar("تم التقاط صورة العداد بنجاح")
+        self.btn_odometer.background_color = (0.1, 0.8, 0.3, 1)
+
+    def capture_receipt(self, instance):
+        """ محاكاة التقاط صورة الفاتورة """
+        self.captured_receipt_photo = "receipt_photo_mock.jpg"
+        self.btn_receipt.text = ar("تم التقاط صورة الفاتورة بنجاح")
+        self.btn_receipt.background_color = (0.1, 0.8, 0.3, 1)
 
     def show_popup(self, title, message):
+        """ إظهار رسالة تنبيه للمستخدم """
         content = BoxLayout(orientation='vertical', padding=15, spacing=10)
-        lbl = Label(text=ar(message), font_name=DEFAULT_FONT, font_size='14sp', halign='center')
+        lbl = Label(text=ar(message), font_name=DEFAULT_FONT, font_size='15sp', halign='center')
         btn = Button(text=ar("موافق"), font_name=DEFAULT_FONT, size_hint_y=0.3, background_color=(0.2, 0.6, 0.8, 1))
         content.add_widget(lbl)
         content.add_widget(btn)
         
-        popup = Popup(title=ar(title), title_font=DEFAULT_FONT, content=content, size_hint=(0.85, 0.45))
+        popup = Popup(title=ar(title), title_font=DEFAULT_FONT, content=content, size_hint=(0.8, 0.4))
         btn.bind(on_press=popup.dismiss)
         popup.open()
 
     def validate_and_submit(self, instance):
-        raw_val = self.odometer_input.text.strip()
+        """ التحقق من الشروط وإرسال البيانات """
+        odometer_val = self.odometer_input.text.strip()
 
-        # 1. التحقق من وجود مدخلات
-        if not raw_val:
-            self.show_popup("تنبيه", "عفواً! يجب إدخال قراءة العداد أولاً.")
+        if not odometer_val:
+            self.show_popup("تنبيه", "يرجى إدخال قراءة العداد أولاً!")
             return
 
-        current_km = int(raw_val)
-
-        # 2. حظر وقبول القراءات بناءً على المنطق الإداري
-        if current_km < self.last_recorded_km:
-            # رفض قاطع إذا كانت القراءة أقل
-            self.show_popup(
-                "❌ تم رفض العملية",
-                f"القراءة المادخلة ({current_km:,} كم) أقل من آخر قراءة مسجلة ({self.last_recorded_km:,} كم)!\nيرجى التأكد من الرقم الصحيح."
-            )
+        if not self.captured_odometer_photo:
+            self.show_popup("خطأ في التوثيق", "عذراً! لا يمكنك الإرسال بدون التقاط صورة العداد أولاً.")
             return
 
-        if current_km == self.last_recorded_km:
-            self.show_popup("تنبيه", "القراءة المدخلة مساوية لآخر قراءة تماماً. هل أنت متاكد؟")
-            return
-
-        # 3. التحقق من الزيادة المفرطة (أكثر من 1500 كم في عملية واحدة للتنبيه)
-        diff = current_km - self.last_recorded_km
-        if diff > 1500:
-            self.show_popup("تنبيه تدقيق", f"الفارق كبير جداً (+{diff:,} كم). تم إرسال البلاغ مع إخطار الإدارة للمراجعة.")
-
-        # 4. حفظ واعتماد القراءة الجديد
-        self.last_recorded_km = current_km
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        
-        self.show_popup(
-            "✅ تم الاعتماد بنجاح",
-            f"تم تحديث العداد إلى: {current_km:,} كم\nمقدار قطع المسافة: +{diff:,} كم\nالتاريخ: {timestamp}"
-        )
+        msg = f"تم إرسال البيانات بنجاح!\nالعداد: {odometer_val} كم\nالوقت: {timestamp}"
+        self.show_popup("نجاح العملية", msg)
 
-class SmartOdometerApp(App):
+# -------------------------------------------------------------
+# 3. مشغل الواجهة
+# -------------------------------------------------------------
+class CameraApp(App):
     def build(self):
-        return SmartOdometerUI()
+        return CameraOdometerUI()
 
 if __name__ == "__main__":
-    SmartOdometerApp().run()
+    CameraApp().run()
